@@ -37,14 +37,23 @@ function App() {
     }
   }, [buscador]);
 
+  useEffect(() => {
+    setListado(listado);
+  },[]);
+
   //      https://javascript.plainenglish.io/how-to-add-to-an-array-in-react-state-3d08ddb2e1dc
 
   const agregar = (item) => {
     setListaTres((listaTres) => [...listaTres, item]);
     setBuscador("");
     setListaAux([]);
+    removerPokemon(item);
 
   };
+
+  const removerPokemon = (poke) => {
+    setListado((listado) => listado.filter((item)=> item.name !== poke.name));
+  }
 
   return (
     <Box>
