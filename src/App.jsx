@@ -1,15 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import {
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  List,
-  ListItem,
-  TextField,
-  IconButton
-} from "@mui/material";
+import {Box,Card,CardContent,CardMedia,List,ListItem,TextField,IconButton,Backdrop,CircularProgress} from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; 
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -23,20 +14,20 @@ function App() {
   const [rechazados, setRechazados] = useState([]);
   const [favoritos, setFavoritos] = useState([]);
   const [id, setId] = useState(0);
+  const [open, setOpen] = useState(true);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleOpen = () => {
+    setOpen(true);
+  };
 
   const ObtenerImagen = () => {
     axios
       .get("https://dog.ceo/api/breeds/image/random")
       .then((response) => {
         setImagen(response.data.message);
-      });
-  };
-
-  const ObtenerNombre = () => {
-    axios
-      .get("https://api.generadordni.es/v2/profiles/person?results=1&gender=male&include_fields=name")
-      .then((response) => {
-        setNombre(response.data[0].name);
+        handleClose();
       });
   };
 
@@ -84,8 +75,8 @@ const agregarrechazado = (perro) => {
 };
 
 const update = () => {
+  handleOpen();
   ObtenerImagen();
-  //ObtenerNombre();
   //cadenaAleatoria();
   ObtenerDogNames();
   setId(id+1);
@@ -97,6 +88,12 @@ const update = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={open}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Grid container spacing={2}>
         <Grid xs={3} sx={{ background: "red" }}>
           <List>
@@ -105,17 +102,16 @@ const update = () => {
                 <Card>
                   <CardMedia
                     component="img"
-                    object-fit= "contain"
                     image={item.imagen}
                   />
-                  <CardContent>
+                  <CardContent sx={{display:'flex',justifyContent: 'center' }}>
                     {item.nombre}
                   </CardContent>
-                  <Box sx={{  alignItems: 'center' }}>
-                    <IconButton aria-label="" onClick={() => borrarrechazado(item)}>
+                  <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
+                    <IconButton aria-label="" disabled={open} onClick={() => borrarrechazado(item)}>
                       <DeleteIcon sx={{ height: 38, width: 38 }} />
                     </IconButton>
-                    <IconButton aria-label="" onClick={() => agregarrechazado(item)}>
+                    <IconButton aria-label="" disabled={open} onClick={() => agregarrechazado(item)}>
                       <FavoriteIcon sx={{ height: 38, width: 38 }} />
                     </IconButton>
                   </Box>
@@ -126,20 +122,20 @@ const update = () => {
         </Grid>
 
         <Grid xs={6} sx={{ background: "grey" }}>
-          <Card>
+          <Card sx={{"max-height":'90vh'}}>
             <CardMedia
               component="img"
               object-fit= "contain"
               image={imagen}
             />
-            <CardContent>
+            <CardContent sx={{display:'flex',justifyContent: 'center' }}>
               {nombre}
             </CardContent>
-            <Box sx={{  alignItems: 'center' }}>
-              <IconButton aria-label="" onClick={() => rechazar({imagen,nombre,id})}>
+            <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
+              <IconButton aria-label="" disabled={open} onClick={() => rechazar({imagen,nombre,id})}>
                 <ThumbDownIcon sx={{ height: 38, width: 38 }} />
               </IconButton>
-              <IconButton aria-label="" onClick={() => agregar({imagen,nombre,id})}>
+              <IconButton aria-label="" disabled={open} onClick={() => agregar({imagen,nombre,id})}>
                 <FavoriteIcon sx={{ height: 38, width: 38 }} />
               </IconButton>
             </Box>
@@ -152,18 +148,17 @@ const update = () => {
               <ListItem key={index}>
                 <Card>
                   <CardMedia
-                    component="img"
-                    object-fit= "contain"
+                    component="img"     
                     image={item.imagen}
                   />
-                  <CardContent>
+                  <CardContent sx={{display:'flex',justifyContent: 'center' }}>
                     {item.nombre}
                   </CardContent>
-                  <Box sx={{  alignItems: 'center' }}>
-                    <IconButton aria-label="" onClick={() => borrarfavorito(item)}>
+                  <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
+                    <IconButton aria-label="" disabled={open} onClick={() => borrarfavorito(item)}>
                       <DeleteIcon sx={{ height: 38, width: 38 }} />
                     </IconButton>
-                    <IconButton aria-label="" onClick={() => rechazarfavorito(item)}>
+                    <IconButton aria-label="" disabled={open} onClick={() => rechazarfavorito(item)}>
                       <ThumbDownIcon sx={{ height: 38, width: 38 }} />
                     </IconButton>
                   </Box>
