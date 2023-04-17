@@ -1,7 +1,9 @@
+
+
 #root {
   max-width: 1280px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0.5rem;
   text-align: center;
 }
 
@@ -42,5 +44,7 @@
 }
 
 .MuiCardMedia-root{
-  max-height: 65vh;
+  max-Height: 80vh;
 }
+
+
