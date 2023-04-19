@@ -98,12 +98,15 @@ function App() {
     setVista(1);
     if(opcion==='macho'){
       setTipo("Macho");
+      setNombre(dogNames.maleRandom());
     }
     if(opcion==='hembra'){
       setTipo("Hembra");
+      setNombre(dogNames.femaleRandom());
     }
     if(opcion==='perrx'){
       setTipo("Perrx");
+      setNombre(dogNames.allRandom());
     }
   };
 
@@ -115,7 +118,7 @@ function App() {
     <Box sx={{ flexGrow: 1 ,height:'100vh'}}>
       {vista === 0 ? 
       <Grid container>
-        <Grid xs={4} sx={{ background: "red" ,paddingTop:"0",paddingBottom:"0"}}>
+        <Grid xs={4} sx={{paddingTop:"0",paddingBottom:"0"}}>
           <div className="container">
             <img className="imagen" src="https://i.pinimg.com/originals/64/1d/81/641d81ad95804da675730a202fd341d1.jpg" onClick={() => cambiarvista("macho")}></img>
             <div className="overlay" onClick={() => cambiarvista("macho")}>
@@ -123,7 +126,7 @@ function App() {
             </div>
           </div>
         </Grid>
-        <Grid xs={4} sx={{ background: "grey" }}>
+        <Grid xs={4}>
             <div className="container">
               <img className="imagen" src="https://i.pinimg.com/originals/02/80/15/02801578c3ed1d48be5d0cdc0bc4895a.jpg" onClick={() => cambiarvista("hembra")}></img>
               <div className="overlay" onClick={() => cambiarvista("hembra")}>
@@ -131,7 +134,7 @@ function App() {
               </div>
             </div>
         </Grid>
-        <Grid xs={4} sx={{ background: "green" ,paddingTop:"0"}}>
+        <Grid xs={4} sx={{paddingTop:"0"}}>
             <div className="container">
               <img className="imagen" src="https://images.hola.com/imagenes/mascotas/20190215137141/razas-perro-pequenos-gt/0-645-998/perros-miniatura-m.jpg?tx=w_680" onClick={() => cambiarvista("perrx")}></img>
               <div className="overlay" onClick={() => cambiarvista("perrx")}>
@@ -147,7 +150,7 @@ function App() {
           <CircularProgress color="inherit" />
         </Backdrop>
         <Grid container spacing={2}>
-          <Grid xs={3} sx={{ background: "red" ,paddingTop:"0"}}>
+          <Grid xs={3} sx={{paddingTop:"0"}}>
             <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
               <ListSubheader>
                 Rechazados
@@ -176,7 +179,7 @@ function App() {
             </List>
           </Grid>
 
-          <Grid xs={6} sx={{ background: "grey" }}>
+          <Grid xs={6}>
             <Card>
               <CardMedia
                 component="img"
@@ -196,7 +199,7 @@ function App() {
             </Card>
           </Grid>
 
-          <Grid xs={3} sx={{ background: "green" ,paddingTop:"0"}}>
+          <Grid xs={3} sx={{paddingTop:"0"}}>
           <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
             <ListSubheader>
               Aceptados
