@@ -7,16 +7,39 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from "axios";
 import dogNames from "dog-names";
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { styled } from '@mui/material/styles';
+import * as React from 'react';
+import Collapse from '@mui/material/Collapse';
+
+const ExpandMore = styled((props) => {
+  const { expand, ...other } = props;
+  return <IconButton {...other} />;
+})(({ theme, expand }) => ({
+  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+  marginLeft: 'auto',
+  transition: theme.transitions.create('transform', {
+    duration: theme.transitions.duration.shortest,
+  }),
+}));
 
 function App() {
   const [imagen, setImagen] = useState("");
   const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("Hola soy una descripcion");
   const [rechazados, setRechazados] = useState([]);
   const [favoritos, setFavoritos] = useState([]);
   const [id, setId] = useState(0);
   const [open, setOpen] = useState(true);
   const [vista, setVista] = useState(0);
   const [tipo, setTipo] = useState("");
+  const [expanded1, setExpanded1] = useState(false);
+
+
+  const handleExpandClick = (perro) => {
+    perro.expandir = !perro.expandir;
+  }
 
   const handleClose = () => {
     setOpen(false);
@@ -149,35 +172,8 @@ function App() {
         <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
           <CircularProgress color="inherit" />
         </Backdrop>
+        
         <Grid container spacing={2}>
-          <Grid xs={3} sx={{paddingTop:"0"}}>
-            <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
-              <ListSubheader>
-                Rechazados
-              </ListSubheader>
-              {rechazados.map((item, index) => (
-                <ListItem sx={{display:"block", paddingLeft:"0",paddingRight:"0",paddingTop:"0"}} key={index}>
-                  <Card>
-                    <CardMedia
-                      component="img"
-                      image={item.imagen}
-                    />
-                    <CardContent sx={{display:'flex',justifyContent: 'center' }}>
-                      {item.nombre}
-                    </CardContent>
-                    <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
-                      <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
-                        <DeleteIcon sx={{ height: 38, width: 38 }} />
-                      </IconButton>
-                      <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
-                        <FavoriteIcon sx={{ height: 38, width: 38 }} />
-                      </IconButton>
-                    </Box>
-                  </Card>
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
 
           <Grid xs={6}>
             <Card>
@@ -185,26 +181,32 @@ function App() {
                 component="img"
                 image={imagen}
               />
-              <CardContent sx={{display:'flex',justifyContent: 'center',height:'1vh'}}>
-                {nombre}
+              <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                  {nombre}
+                </Typography>
+                <Typography variant="body2">
+                  {descripcion}
+                </Typography>
               </CardContent>
               <Box sx={{ display:'flex',justifyContent:'space-evenly',height:'10vh'}}>
-                <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'rechazar'}),update()}}>
+                <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'rechazar',descripcion,expandir:expanded1}),update()}}>
                   <ThumbDownIcon sx={{ height: 38, width: 38 }} />
                 </IconButton>
-                <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'aceptar'}),update()}}>
+                <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'aceptar',descripcion,expandir:expanded1}),update()}}>
                   <FavoriteIcon sx={{ height: 38, width: 38 }} />
                 </IconButton>
               </Box>
             </Card>
           </Grid>
+          
 
           <Grid xs={3} sx={{paddingTop:"0"}}>
           <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
             <ListSubheader>
               Aceptados
             </ListSubheader>
-              {favoritos.map((item, index) => (
+              {favoritos.slice(0).reverse().map((item, index) => (
                 <ListItem sx={{display:"block", paddingLeft:"0",paddingRight:"0",paddingTop:"0"}} key={index}>
                   <Card>
                     <CardMedia
@@ -214,6 +216,13 @@ function App() {
                     <CardContent sx={{display:'flex',justifyContent: 'center' }}>
                       {item.nombre}
                     </CardContent>
+                    <Collapse in={item.expandir} timeout="auto" unmountOnExit>
+                      <CardContent>
+                      <Typography variant="body2">
+                        {item.descripcion}
+                      </Typography>
+                      </CardContent>
+                    </Collapse>
                     <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
                       <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
                         <DeleteIcon sx={{ height: 38, width: 38 }} />
@@ -221,6 +230,58 @@ function App() {
                       <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
                         <ThumbDownIcon sx={{ height: 38, width: 38 }} />
                       </IconButton>
+                      <ExpandMore
+                        expand={item.expandir}
+                        onClick={() => handleExpandClick(item)}
+                        aria-expanded={item.expandir}
+                        aria-label="mostrar descripcion"
+                      >
+                        <ExpandMoreIcon />
+                      </ExpandMore>
+                    </Box>
+                  </Card>
+                </ListItem>
+              ))}
+            </List>
+          </Grid>
+
+          <Grid xs={3} sx={{paddingTop:"0"}}>
+            <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
+              <ListSubheader>
+                Rechazados
+              </ListSubheader>
+              {rechazados.slice(0).reverse().map((item, index) => (
+                <ListItem sx={{display:"block", paddingLeft:"0",paddingRight:"0",paddingTop:"0"}} key={index}>
+                  <Card>
+                    <CardMedia
+                      component="img"
+                      image={item.imagen}
+                    />
+                    <CardContent sx={{display:'flex',justifyContent: 'center' }}>
+                      {item.nombre}
+                    </CardContent>
+                    <Collapse in={item.expandir} timeout="auto" unmountOnExit>
+                      <CardContent>
+                      <Typography variant="body2">
+                        {item.descripcion}
+                      </Typography>
+                      </CardContent>
+                    </Collapse>
+                    <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
+                      <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
+                        <DeleteIcon sx={{ height: 38, width: 38 }} />
+                      </IconButton>
+                      <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
+                        <FavoriteIcon sx={{ height: 38, width: 38 }} />
+                      </IconButton>
+                      <ExpandMore
+                        expand={item.expandir}
+                        onClick={() => handleExpandClick(item)}
+                        aria-expanded={item.expandir}
+                        aria-label="mostrar descripcion"
+                      >
+                        <ExpandMoreIcon />
+                      </ExpandMore>
                     </Box>
                   </Card>
                 </ListItem>
