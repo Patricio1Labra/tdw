@@ -36,9 +36,31 @@ function App() {
   const [tipo, setTipo] = useState("");
   const [expanded1, setExpanded1] = useState(false);
 
-
   const handleExpandClick = (perro) => {
     perro.expandir = !perro.expandir;
+  }
+
+  const handleExpandClick1 = (perro) => {
+    if(perro.lista==='aceptar'){
+      let update = favoritos.map(item => {
+        if(item == perro){
+          return {...item, expandir: !item.expandir}
+        }else{
+          return item
+        }
+      })
+      setFavoritos(update);
+    }
+    if(perro.lista==='rechazar'){
+      let update = rechazados.map(item => {
+        if(item == perro){
+          return {...item, expandir: !item.expandir}
+        }else{
+          return item
+        }
+      })
+      setRechazados(update);
+    }
   }
 
   const handleClose = () => {
@@ -175,13 +197,14 @@ function App() {
         
         <Grid container spacing={2}>
 
-          <Grid xs={6}>
-            <Card>
+          <Grid xs={12} sm={6}>
+            <Card sx={{maxHeight:'95vh'}}>
               <CardMedia
                 component="img"
+                className="imagen1"
                 image={imagen}
               />
-              <CardContent>
+              <CardContent sx={{height:'5vh'}}>
                 <Typography gutterBottom variant="h5" component="div">
                   {nombre}
                 </Typography>
@@ -189,7 +212,7 @@ function App() {
                   {descripcion}
                 </Typography>
               </CardContent>
-              <Box sx={{ display:'flex',justifyContent:'space-evenly',height:'10vh'}}>
+              <Box sx={{ display:'flex',justifyContent:'space-evenly',height:'5vh'}}>
                 <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'rechazar',descripcion,expandir:expanded1}),update()}}>
                   <ThumbDownIcon sx={{ height: 38, width: 38 }} />
                 </IconButton>
@@ -201,7 +224,7 @@ function App() {
           </Grid>
           
 
-          <Grid xs={3} sx={{paddingTop:"0"}}>
+          <Grid xs={6} sm={3} sx={{paddingTop:"0"}}>
           <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
             <ListSubheader>
               Aceptados
@@ -232,7 +255,7 @@ function App() {
                       </IconButton>
                       <ExpandMore
                         expand={item.expandir}
-                        onClick={() => handleExpandClick(item)}
+                        onClick={() => handleExpandClick1(item)}
                         aria-expanded={item.expandir}
                         aria-label="mostrar descripcion"
                       >
@@ -245,7 +268,7 @@ function App() {
             </List>
           </Grid>
 
-          <Grid xs={3} sx={{paddingTop:"0"}}>
+          <Grid xs={6} sm={3} sx={{paddingTop:"0"}}>
             <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
               <ListSubheader>
                 Rechazados
@@ -276,7 +299,7 @@ function App() {
                       </IconButton>
                       <ExpandMore
                         expand={item.expandir}
-                        onClick={() => handleExpandClick(item)}
+                        onClick={() => handleExpandClick1(item)}
                         aria-expanded={item.expandir}
                         aria-label="mostrar descripcion"
                       >
