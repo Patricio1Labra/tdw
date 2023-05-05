@@ -12,6 +12,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { styled } from '@mui/material/styles';
 import * as React from 'react';
 import Collapse from '@mui/material/Collapse';
+import Tooltip from '@mui/material/Tooltip';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -35,10 +36,6 @@ function App() {
   const [vista, setVista] = useState(0);
   const [tipo, setTipo] = useState("");
   const [expanded1, setExpanded1] = useState(false);
-
-  const handleExpandClick = (perro) => {
-    perro.expandir = !perro.expandir;
-  }
 
   const handleExpandClick1 = (perro) => {
     if(perro.lista==='aceptar'){
@@ -196,7 +193,6 @@ function App() {
         </Backdrop>
         
         <Grid container spacing={2}>
-
           <Grid xs={12} sm={6}>
             <Card sx={{maxHeight:'95vh'}}>
               <CardMedia
@@ -213,17 +209,20 @@ function App() {
                 </Typography>
               </CardContent>
               <Box sx={{ display:'flex',justifyContent:'space-evenly',height:'5vh'}}>
-                <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'rechazar',descripcion,expandir:expanded1}),update()}}>
-                  <ThumbDownIcon sx={{ height: 38, width: 38 }} />
-                </IconButton>
-                <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'aceptar',descripcion,expandir:expanded1}),update()}}>
-                  <FavoriteIcon sx={{ height: 38, width: 38 }} />
-                </IconButton>
+                <Tooltip title="No me interesa" followCursor>
+                  <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'rechazar',descripcion,expandir:expanded1}),update()}}>
+                    <ThumbDownIcon sx={{ height: 38, width: 38 }} />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Me interesa" followCursor>
+                  <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'aceptar',descripcion,expandir:expanded1}),update()}}>
+                    <FavoriteIcon sx={{ height: 38, width: 38 }} />
+                  </IconButton>
+                </Tooltip>
               </Box>
             </Card>
           </Grid>
           
-
           <Grid xs={6} sm={3} sx={{paddingTop:"0"}}>
           <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
             <ListSubheader>
@@ -247,20 +246,26 @@ function App() {
                       </CardContent>
                     </Collapse>
                     <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
-                      <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
-                        <DeleteIcon sx={{ height: 38, width: 38 }} />
-                      </IconButton>
-                      <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
-                        <ThumbDownIcon sx={{ height: 38, width: 38 }} />
-                      </IconButton>
-                      <ExpandMore
-                        expand={item.expandir}
-                        onClick={() => handleExpandClick1(item)}
-                        aria-expanded={item.expandir}
-                        aria-label="mostrar descripcion"
-                      >
-                        <ExpandMoreIcon />
-                      </ExpandMore>
+                      <Tooltip title="Borrar" followCursor>
+                        <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
+                          <DeleteIcon sx={{ height: 38, width: 38 }} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="No me interesa" followCursor>
+                        <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
+                          <ThumbDownIcon sx={{ height: 38, width: 38 }} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Ver más" followCursor>
+                        <ExpandMore
+                          expand={item.expandir}
+                          onClick={() => handleExpandClick1(item)}
+                          aria-expanded={item.expandir}
+                          aria-label="mostrar descripcion"
+                        >
+                          <ExpandMoreIcon />
+                        </ExpandMore>
+                      </Tooltip>
                     </Box>
                   </Card>
                 </ListItem>
@@ -291,32 +296,36 @@ function App() {
                       </CardContent>
                     </Collapse>
                     <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
-                      <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
-                        <DeleteIcon sx={{ height: 38, width: 38 }} />
-                      </IconButton>
-                      <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
-                        <FavoriteIcon sx={{ height: 38, width: 38 }} />
-                      </IconButton>
-                      <ExpandMore
-                        expand={item.expandir}
-                        onClick={() => handleExpandClick1(item)}
-                        aria-expanded={item.expandir}
-                        aria-label="mostrar descripcion"
-                      >
-                        <ExpandMoreIcon />
-                      </ExpandMore>
+                      <Tooltip title="Borrar" followCursor>
+                        <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
+                          <DeleteIcon sx={{ height: 38, width: 38 }} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Me interesa" followCursor>
+                        <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
+                          <FavoriteIcon sx={{ height: 38, width: 38 }} />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Ver más" followCursor>
+                        <ExpandMore
+                          expand={item.expandir}
+                          onClick={() => handleExpandClick1(item)}
+                          aria-expanded={item.expandir}
+                          aria-label="mostrar descripcion"
+                        >
+                          <ExpandMoreIcon />
+                        </ExpandMore>
+                      </Tooltip>
                     </Box>
                   </Card>
                 </ListItem>
               ))}
             </List>
           </Grid>
-          
         </Grid>
         </Box>
         : ''}
     </Box>
-    
   );
 }
 
