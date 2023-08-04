@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./App.css";
+import "./Pagina.module.css";
 import {Box,Card,CardContent,CardMedia,List,ListItem,IconButton,Backdrop,CircularProgress, ListSubheader} from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; 
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
@@ -25,7 +25,7 @@ const ExpandMore = styled((props) => {
   }),
 }));
 
-function App() {
+function Pagina() {
   const [imagen, setImagen] = useState("");
   const [nombre, setNombre] = useState("");
   const [descripcion, setDescripcion] = useState("Hola soy una descripcion");
@@ -329,4 +329,4 @@ function App() {
   );
 }
 
-export default App;
+export default Pagina;
