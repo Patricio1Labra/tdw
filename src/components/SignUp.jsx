@@ -23,33 +23,58 @@ const defaultTheme = createTheme();
 
 export default function SignUp() {
   const [imagen, setImagen] = useState("");
-  const [age, setAge] = useState('');
+  const [sexo, setSexo] = useState("");
   
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+  const [formData, setFormData] = useState({
+    nombre: '',
+    sexo: '',
+    url_foto: '',
+    email: '',
+    password: '',
+    descripcion: 'probando',
+  });
 
   const ObtenerImagen = () => {
     axios
       .get("https://dog.ceo/api/breeds/image/random")
       .then((response) => {
         setImagen(response.data.message);
+        setFormData({...formData,url_foto: response.data.message,});
         handleClose();
       });
   };
 
+  const handleChangeSelect = (event) => {
+    setSexo(event.target.value);
+    setFormData({...formData,sexo: event.target.value,});
+  };
+
   const handleChange = (event) => {
-    setAge(event.target.value);
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   useEffect(() => {
     ObtenerImagen();
   }, []);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      await axios.post('http://localhost:8000/api/perros/agregar/', formData);
+      setFormData({
+        nombre: '',
+        sexo: '',
+        url_foto: '',
+        email: '',
+        password: '',
+        descripcion: '',
+      });
+    } catch (error) {
+      console.log(formData)
+      console.log("no funciona")
+    }
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -57,7 +82,6 @@ export default function SignUp() {
         <CssBaseline />
         <Box
           sx={{
-            marginTop: 8,
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -69,7 +93,7 @@ export default function SignUp() {
           <Typography component="h1" variant="h5">
             Registro
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 2 }}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Card sx={{ display: 'flex', alignItems: 'center' }}>
@@ -89,12 +113,13 @@ export default function SignUp() {
               <Grid item xs={12}>
                 <TextField
                   autoComplete="given-name"
-                  name="firstName"
+                  name="nombre"
                   required
                   fullWidth
-                  id="firstName"
+                  id="nombre"
                   label="Nombre"
                   autoFocus
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -102,15 +127,15 @@ export default function SignUp() {
                   <InputLabel id="demo-simple-select-label">Sexo *</InputLabel>
                   <Select
                     labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={age}
+                    id="sexo"
+                    value={sexo}
                     label="Sexo *"
-                    onChange={handleChange}
+                    onChange={handleChangeSelect}
                     required
                   >
-                    <MenuItem value={10}>Macho</MenuItem>
-                    <MenuItem value={20}>Hembra</MenuItem>
-                    <MenuItem value={30}>Otro</MenuItem>
+                    <MenuItem value={'Macho'}>Macho</MenuItem>
+                    <MenuItem value={'Hembra'}>Hembra</MenuItem>
+                    <MenuItem value={'Otro'}>Otro</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>
@@ -122,6 +147,7 @@ export default function SignUp() {
                   label="Correo Electronico"
                   name="email"
                   autoComplete="email"
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -133,9 +159,19 @@ export default function SignUp() {
                   type="password"
                   id="password"
                   autoComplete="new-password"
+                  onChange={handleChange}
                 />
               </Grid>
               <Grid item xs={12}>
+                <TextField
+                  id="descripcion"
+                  label="Descripcion"
+                  multiline
+                  required
+                  fullWidth
+                  rows={4}
+                  onChange={handleChange}
+                />
               </Grid>
             </Grid>
             <Button
@@ -144,7 +180,7 @@ export default function SignUp() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign Up
+              Registrarse
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
