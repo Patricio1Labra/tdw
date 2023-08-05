@@ -25,6 +25,7 @@ export default function SignUp() {
   const [imagen, setImagen] = useState("");
   const [sexo, setSexo] = useState("");
   
+  
   const [formData, setFormData] = useState({
     nombre: '',
     sexo: '',

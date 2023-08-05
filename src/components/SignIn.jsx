@@ -10,6 +10,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from "axios";
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
@@ -19,10 +20,17 @@ export default function SignIn() {
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    try {
+      axios.post('http://localhost:8000/api/perros/login/', data)
+      .then((response) => {
+        console.log(response)
+        //setUser(response.data);
+        //setError('');
+      })
+    } catch (error) {
+      console.log(data)
+      console.log("no funciona")
+    }
   };
 
   return (

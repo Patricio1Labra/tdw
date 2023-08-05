@@ -1,12 +1,8 @@
 
-POST http://localhost:8000/api/perros/agregar/
+POST http://localhost:8000/api/perros/login/
 Content-Type: application/json
 
 {   
-    "nombre": "hola", 
-    "sexo": "Macho", 
-    "url_foto": "https://images.dog.ceo/breeds/vizsla/n02100583_1908.jpg", 
-    "email": "hola@algo.com", 
-    "password": "123456", 
-    "descripcion": "probando" 
+    "email": "probar@algo.cl", 
+    "password": "probando"
 }
