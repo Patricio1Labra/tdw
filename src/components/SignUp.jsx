@@ -31,7 +31,7 @@ export default function SignUp() {
     url_foto: '',
     email: '',
     password: '',
-    descripcion: 'probando',
+    descripcion: '',
   });
 
   const ObtenerImagen = () => {
@@ -52,6 +52,10 @@ export default function SignUp() {
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleChangeDescripcion = (event) => {
+    setFormData({...formData,descripcion: event.target.value,});
   };
 
   useEffect(() => {
@@ -170,7 +174,7 @@ export default function SignUp() {
                   required
                   fullWidth
                   rows={4}
-                  onChange={handleChange}
+                  onChange={handleChangeDescripcion}
                 />
               </Grid>
             </Grid>
