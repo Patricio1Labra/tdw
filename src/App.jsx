@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "./App.css";
+import "./App.module.css";
 import {Box,Card,CardContent,CardMedia,List,ListItem,IconButton,Backdrop,CircularProgress, ListSubheader} from "@mui/material";
 import Grid from '@mui/material/Unstable_Grid2'; 
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
@@ -13,6 +13,7 @@ import { styled } from '@mui/material/styles';
 import * as React from 'react';
 import Collapse from '@mui/material/Collapse';
 import Tooltip from '@mui/material/Tooltip';
+import { useParams } from 'react-router-dom';
 
 const ExpandMore = styled((props) => {
   const { expand, ...other } = props;
@@ -31,11 +32,37 @@ function App() {
   const [descripcion, setDescripcion] = useState("Hola soy una descripcion");
   const [rechazados, setRechazados] = useState([]);
   const [favoritos, setFavoritos] = useState([]);
-  const [id, setId] = useState(0);
+  const [id1, setId1] = useState(0);
   const [open, setOpen] = useState(true);
-  const [vista, setVista] = useState(0);
-  const [tipo, setTipo] = useState("");
   const [expanded1, setExpanded1] = useState(false);
+  const { id } = useParams();
+  const [perro, setPerro] = useState("");
+  const [perros, setPerros] = useState([]);
+  const [perroAleatorio, setPerroAleatorio] = useState("");
+
+
+  const ObtenerPerro = (id) => {
+    try {
+      axios.get(`http://localhost:8000/api/perros/${id}`)
+      .then((response) => {
+        setPerro(response.data);
+      })
+    } catch (error) {
+      console.log(data)
+      console.log("no funciona")
+    }
+  };
+  const ObtenerPerros = (id) => {
+    try {
+      axios.get(`http://localhost:8000/api/indexperros/${id}`)
+      .then((response) => {
+        setPerros(response.data);
+      })
+    } catch (error) {
+      console.log(data)
+      console.log("no funciona")
+    }
+  };
 
   const handleExpandClick1 = (perro) => {
     if(perro.lista==='aceptar'){
@@ -60,51 +87,17 @@ function App() {
     }
   }
 
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleOpen = () => {
-    setOpen(true);
-  };
-
-  const ObtenerImagen = () => {
-    axios
-      .get("https://dog.ceo/api/breeds/image/random")
-      .then((response) => {
-        setImagen(response.data.message);
-        handleClose();
-      });
-  };
-
-  const cadenaAleatoria = () => {
-    const banco = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    let aleatoria = "";
-    for (let i = 0; i < 6; i++) {
-        aleatoria += banco.charAt(Math.floor(Math.random() * banco.length));
-    }
-    setNombre(aleatoria);
-  };
-  
-  const ObtenerDogNames = () => {
-      if(tipo==='Macho'){
-        setNombre(dogNames.maleRandom());
-      }
-      if(tipo==='Hembra'){
-        setNombre(dogNames.femaleRandom());
-      }
-      if(tipo==='Perrx'){
-        setNombre(dogNames.allRandom());
-      }
-      
-  };
-
-  const agregar = (perro) => {
-    if(perro.lista==='aceptar'){
-      setFavoritos([...favoritos, perro]);
-    }
-    if(perro.lista==='rechazar'){
-      setRechazados([...rechazados, perro]);
-    }
+  const agregar = (preferencia, perroCandidatoId) => {
+    axios.post(`http://localhost:8000/api/perros/agregarpreferencia/${id}`, {
+      perro_candidato_id: perroCandidatoId,
+      preferencia: preferencia,
+    })
+    .then((response) => {
+      console.log("Preferencia guardada correctamente");
+    })
+    .catch((error) => {
+      console.error("Error al guardar preferencia:", error);
+    });
   };
 
   const borrar = (perro) => {
@@ -128,204 +121,159 @@ function App() {
     }
   };
 
-  const update = () => {
-    handleOpen();
-    ObtenerImagen();
-    //cadenaAleatoria();
-    ObtenerDogNames();
-    setId(id+1);
-  };
-
-  const cambiarvista = (opcion) => {
-    setVista(1);
-    if(opcion==='macho'){
-      setTipo("Macho");
-      setNombre(dogNames.maleRandom());
-    }
-    if(opcion==='hembra'){
-      setTipo("Hembra");
-      setNombre(dogNames.femaleRandom());
-    }
-    if(opcion==='perrx'){
-      setTipo("Perrx");
-      setNombre(dogNames.allRandom());
+  const seleccionarPerroAleatorio = () => {
+    if (perros.length > 0) {
+      const indiceAleatorio = Math.floor(Math.random() * perros.length);
+      const perroSeleccionado = perros[indiceAleatorio];
+      
+      // Crear una nueva lista de perros excluyendo el perro seleccionado
+      const nuevosPerros = perros.filter(perro => perro.id !== perroSeleccionado.id);
+      console.log(perroSeleccionado);
+      setPerroAleatorio(perroSeleccionado);
+      setPerros(nuevosPerros);
     }
   };
 
   useEffect(() => {
-    update();
+    ObtenerPerro(id);
+    ObtenerPerros(id);
+    seleccionarPerroAleatorio();
   }, []);
 
   return (
-    <Box sx={{ flexGrow: 1 ,height:'100vh'}}>
-      {vista === 0 ? 
-      <Grid container>
-        <Grid xs={4} sx={{paddingTop:"0",paddingBottom:"0"}}>
-          <div className="container">
-            <img className="imagen" src="https://i.pinimg.com/originals/64/1d/81/641d81ad95804da675730a202fd341d1.jpg" onClick={() => cambiarvista("macho")}></img>
-            <div className="overlay" onClick={() => cambiarvista("macho")}>
-              <div className="text">Machos</div>
-            </div>
-          </div>
+    <Box className="boxroot">
+      <Grid container spacing={2}>
+        <Grid xs={12} sm={6}>
+          <Card sx={{maxHeight:'95vh'}}>
+            <CardMedia
+              component="img"
+              className="imagen1"
+              image={perroAleatorio.url_foto}
+            />
+            <CardContent sx={{height:'5vh'}}>
+              <Typography gutterBottom variant="h5" component="div"> 
+                {perroAleatorio.nombre}
+              </Typography>
+              <Typography variant="body2">
+                {perroAleatorio.descripcion}
+              </Typography>
+            </CardContent>
+            <Box sx={{ display:'flex',justifyContent:'space-evenly',height:'5vh'}}>
+              <Tooltip title="No me interesa" followCursor>
+                <IconButton aria-label=""  onClick={() => agregar("aceptado",perroAleatorio.id)}>
+                  <ThumbDownIcon sx={{ height: 38, width: 38 }} />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Me interesa" followCursor>
+                <IconButton aria-label=""  onClick={() => agregar("rechazado",perroAleatorio.id)}>
+                  <FavoriteIcon sx={{ height: 38, width: 38 }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
+          </Card>
         </Grid>
-        <Grid xs={4}>
-            <div className="container">
-              <img className="imagen" src="https://i.pinimg.com/originals/02/80/15/02801578c3ed1d48be5d0cdc0bc4895a.jpg" onClick={() => cambiarvista("hembra")}></img>
-              <div className="overlay" onClick={() => cambiarvista("hembra")}>
-                <div className="text">Hembras</div>
-              </div>
-            </div>
-        </Grid>
-        <Grid xs={4} sx={{paddingTop:"0"}}>
-            <div className="container">
-              <img className="imagen" src="https://images.hola.com/imagenes/mascotas/20190215137141/razas-perro-pequenos-gt/0-645-998/perros-miniatura-m.jpg?tx=w_680" onClick={() => cambiarvista("perrx")}></img>
-              <div className="overlay" onClick={() => cambiarvista("perrx")}>
-                <div className="text">Perrxs</div>
-              </div>
-            </div>
-        </Grid>
-      </Grid>
-      : ''}
-      {vista === 1 ?
-      <Box className="boxroot">
-        <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={open}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
         
-        <Grid container spacing={2}>
-          <Grid xs={12} sm={6}>
-            <Card sx={{maxHeight:'95vh'}}>
-              <CardMedia
-                component="img"
-                className="imagen1"
-                image={imagen}
-              />
-              <CardContent sx={{height:'5vh'}}>
-                <Typography gutterBottom variant="h5" component="div">
-                  {nombre}
-                </Typography>
-                <Typography variant="body2">
-                  {descripcion}
-                </Typography>
-              </CardContent>
-              <Box sx={{ display:'flex',justifyContent:'space-evenly',height:'5vh'}}>
-                <Tooltip title="No me interesa" followCursor>
-                  <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'rechazar',descripcion,expandir:expanded1}),update()}}>
-                    <ThumbDownIcon sx={{ height: 38, width: 38 }} />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Me interesa" followCursor>
-                  <IconButton aria-label="" disabled={open} onClick={() => {agregar({imagen,nombre,id,lista:'aceptar',descripcion,expandir:expanded1}),update()}}>
-                    <FavoriteIcon sx={{ height: 38, width: 38 }} />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-            </Card>
-          </Grid>
-          
-          <Grid xs={6} sm={3} sx={{paddingTop:"0"}}>
+        <Grid xs={6} sm={3} sx={{paddingTop:"0"}}>
+        <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
+          <ListSubheader>
+            Aceptados de {perro.nombre}
+          </ListSubheader>
+            {favoritos.slice(0).reverse().map((item, index) => (
+              <ListItem sx={{display:"block", paddingLeft:"0",paddingRight:"0",paddingTop:"0"}} key={index}>
+                <Card>
+                  <CardMedia
+                    component="img"     
+                    image={item.imagen}
+                  />
+                  <CardContent sx={{display:'flex',justifyContent: 'center' }}>
+                    {item.nombre}
+                  </CardContent>
+                  <Collapse in={item.expandir} timeout="auto" unmountOnExit>
+                    <CardContent>
+                    <Typography variant="body2">
+                      {item.descripcion}
+                    </Typography>
+                    </CardContent>
+                  </Collapse>
+                  <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
+                    <Tooltip title="Borrar" followCursor>
+                      <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
+                        <DeleteIcon sx={{ height: 38, width: 38 }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="No me interesa" followCursor>
+                      <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
+                        <ThumbDownIcon sx={{ height: 38, width: 38 }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Ver más" followCursor>
+                      <ExpandMore
+                        expand={item.expandir}
+                        onClick={() => handleExpandClick1(item)}
+                        aria-expanded={item.expandir}
+                        aria-label="mostrar descripcion"
+                      >
+                        <ExpandMoreIcon />
+                      </ExpandMore>
+                    </Tooltip>
+                  </Box>
+                </Card>
+              </ListItem>
+            ))}
+          </List>
+        </Grid>
+
+        <Grid xs={6} sm={3} sx={{paddingTop:"0"}}>
           <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
             <ListSubheader>
-              Aceptados
+              Rechazados de {perro.nombre}
             </ListSubheader>
-              {favoritos.slice(0).reverse().map((item, index) => (
-                <ListItem sx={{display:"block", paddingLeft:"0",paddingRight:"0",paddingTop:"0"}} key={index}>
-                  <Card>
-                    <CardMedia
-                      component="img"     
-                      image={item.imagen}
-                    />
-                    <CardContent sx={{display:'flex',justifyContent: 'center' }}>
-                      {item.nombre}
+            {rechazados.slice(0).reverse().map((item, index) => (
+              <ListItem sx={{display:"block", paddingLeft:"0",paddingRight:"0",paddingTop:"0"}} key={index}>
+                <Card>
+                  <CardMedia
+                    component="img"
+                    image={item.imagen}
+                  />
+                  <CardContent sx={{display:'flex',justifyContent: 'center' }}>
+                    {item.nombre}
+                  </CardContent>
+                  <Collapse in={item.expandir} timeout="auto" unmountOnExit>
+                    <CardContent>
+                    <Typography variant="body2">
+                      {item.descripcion}
+                    </Typography>
                     </CardContent>
-                    <Collapse in={item.expandir} timeout="auto" unmountOnExit>
-                      <CardContent>
-                      <Typography variant="body2">
-                        {item.descripcion}
-                      </Typography>
-                      </CardContent>
-                    </Collapse>
-                    <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
-                      <Tooltip title="Borrar" followCursor>
-                        <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
-                          <DeleteIcon sx={{ height: 38, width: 38 }} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="No me interesa" followCursor>
-                        <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
-                          <ThumbDownIcon sx={{ height: 38, width: 38 }} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Ver más" followCursor>
-                        <ExpandMore
-                          expand={item.expandir}
-                          onClick={() => handleExpandClick1(item)}
-                          aria-expanded={item.expandir}
-                          aria-label="mostrar descripcion"
-                        >
-                          <ExpandMoreIcon />
-                        </ExpandMore>
-                      </Tooltip>
-                    </Box>
-                  </Card>
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
-
-          <Grid xs={6} sm={3} sx={{paddingTop:"0"}}>
-            <List sx={{overflow:'auto',maxHeight:'95vh',paddingTop:'0'}}>
-              <ListSubheader>
-                Rechazados
-              </ListSubheader>
-              {rechazados.slice(0).reverse().map((item, index) => (
-                <ListItem sx={{display:"block", paddingLeft:"0",paddingRight:"0",paddingTop:"0"}} key={index}>
-                  <Card>
-                    <CardMedia
-                      component="img"
-                      image={item.imagen}
-                    />
-                    <CardContent sx={{display:'flex',justifyContent: 'center' }}>
-                      {item.nombre}
-                    </CardContent>
-                    <Collapse in={item.expandir} timeout="auto" unmountOnExit>
-                      <CardContent>
-                      <Typography variant="body2">
-                        {item.descripcion}
-                      </Typography>
-                      </CardContent>
-                    </Collapse>
-                    <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
-                      <Tooltip title="Borrar" followCursor>
-                        <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
-                          <DeleteIcon sx={{ height: 38, width: 38 }} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Me interesa" followCursor>
-                        <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
-                          <FavoriteIcon sx={{ height: 38, width: 38 }} />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Ver más" followCursor>
-                        <ExpandMore
-                          expand={item.expandir}
-                          onClick={() => handleExpandClick1(item)}
-                          aria-expanded={item.expandir}
-                          aria-label="mostrar descripcion"
-                        >
-                          <ExpandMoreIcon />
-                        </ExpandMore>
-                      </Tooltip>
-                    </Box>
-                  </Card>
-                </ListItem>
-              ))}
-            </List>
-          </Grid>
+                  </Collapse>
+                  <Box sx={{ display: 'flex',justifyContent: 'space-evenly' }}>
+                    <Tooltip title="Borrar" followCursor>
+                      <IconButton aria-label="" disabled={open} onClick={() => borrar(item)}>
+                        <DeleteIcon sx={{ height: 38, width: 38 }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Me interesa" followCursor>
+                      <IconButton aria-label="" disabled={open} onClick={() => cambiar(item)}>
+                        <FavoriteIcon sx={{ height: 38, width: 38 }} />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Ver más" followCursor>
+                      <ExpandMore
+                        expand={item.expandir}
+                        onClick={() => handleExpandClick1(item)}
+                        aria-expanded={item.expandir}
+                        aria-label="mostrar descripcion"
+                      >
+                        <ExpandMoreIcon />
+                      </ExpandMore>
+                    </Tooltip>
+                  </Box>
+                </Card>
+              </ListItem>
+            ))}
+          </List>
         </Grid>
-        </Box>
-        : ''}
-    </Box>
+      </Grid>
+      </Box>
   );
 }
 
