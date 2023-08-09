@@ -11,19 +11,26 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 // TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
+
+  const navigate = useNavigate();
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     try {
-      axios.post('http://localhost:8000/api/perros/login/', data)
+      axios.post('http://localhost:8000/api/perros/login1/', data)
       .then((response) => {
-        console.log(response)
+        console.log("funcione");
+        setAuthenticated(true);
+        navigate('/pagina'); 
+
         //setUser(response.data);
         //setError('');
       })

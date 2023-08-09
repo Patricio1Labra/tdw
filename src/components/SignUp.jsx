@@ -12,19 +12,20 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import {Card,CardMedia,IconButton} from "@mui/material";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect} from "react";
 import InputLabel from '@mui/material/InputLabel';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import { useNavigate } from 'react-router-dom';
 
 const defaultTheme = createTheme();
 
 export default function SignUp() {
   const [imagen, setImagen] = useState("");
   const [sexo, setSexo] = useState("");
-  
+  const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
     nombre: '',
@@ -41,7 +42,6 @@ export default function SignUp() {
       .then((response) => {
         setImagen(response.data.message);
         setFormData({...formData,url_foto: response.data.message,});
-        handleClose();
       });
   };
 
@@ -67,6 +67,7 @@ export default function SignUp() {
     event.preventDefault();
     try {
       await axios.post('http://localhost:8000/api/perros/agregar/', formData);
+      navigate('/'); 
       setFormData({
         nombre: '',
         sexo: '',
